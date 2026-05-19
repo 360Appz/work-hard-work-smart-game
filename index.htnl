@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🧠 Work Hard vs Work Smart — The Game</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Space+Grotesk:wght@300;400;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f0e8;
+  --bg2: #ede8df;
+  --fg: #1a1208;
+  --fg2: #5c4d3a;
+  --card: #fff9f0;
+  --accent1: #ff6b35;
+  --accent2: #7c3aed;
+  --accent3: #10b981;
+  --accent4: #f59e0b;
+  --accent5: #ec4899;
+  --neon: #00ffaa;
+  --shadow: rgba(0,0,0,0.15);
+  --border: rgba(0,0,0,0.08);
+  --correct: #10b981;
+  --wrong: #ef4444;
+  --card-shadow: 6px 6px 0px rgba(0,0,0,0.9);
+}
+[data-theme="dark"] {
+  --bg: #0d0d12;
+  --bg2: #1a1a24;
+  --fg: #f0e8d8;
+  --fg2: #a09080;
+  --card: #1e1e2a;
+  --shadow: rgba(0,255,170,0.1);
+  --border: rgba(255,255,255,0.07);
+  --card-shadow: 6px 6px 0px rgba(0,255,170,0.4);
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+#cursor {
+  position: fixed; width:20px; height:20px;
+  border:2px solid var(--accent1);
+  border-radius:50%; pointer-events:none;
+  z-index:9999; transform:translate(-50%,-50%);
+  transition: width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: difference;
+}
+#cursor.hovered { width:40px; height:40px; background:rgba(255,107,53,0.3); }
+
+/* BACKGROUND GRID */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size:40px 40px;
+  pointer-events:none; z-index:0;
+}
+
+/* FLOATING PARTICLES */
+.particle {
+  position:fixed; border-radius:50%;
+  pointer-events:none; z-index:0;
+  animation: floatParticle linear infinite;
+}
+@keyframes floatParticle {
+  0% { transform: translateY(110vh) rotate(0deg); opacity:0; }
+  10% { opacity:1; }
+  90% { opacity:1; }
+  100% { transform: translateY(-10vh) rotate(720deg); opacity:0; }
+}
+
+/* NAV */
+nav {
+  position:fixed; top:0; left:0; right:0; z-index:1000;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 32px;
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--border);
+}
+.nav-logo {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:28px; letter-spacing:2px;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.nav-score {
+  display:flex; gap:20px; align-items:center;
+}
+.score-pill {
+  background: var(--card);
+  border:1px solid var(--border);
+  border-radius:50px; padding:6px 16px;
+  font-size:13px; font-weight:600;
+  display:flex; align-items:center; gap:6px;
+}
+.score-pill .num { color:var(--accent1); font-size:18px; }
+#darkToggle {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:50px; padding:6px 14px;
+  cursor:pointer; font-size:18px;
+  transition:all 0.3s;
+}
+#darkToggle:hover { transform:scale(1.1); }
+
+/* HERO SECTION */
+#hero {
+  min-height:100vh; display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  position:relative; z-index:1; padding:80px 20px 40px;
+  perspective:1000px;
+}
+.hero-eyebrow {
+  font-size:12px; letter-spacing:4px; text-transform:uppercase;
+  color:var(--accent1); font-weight:700; margin-bottom:20px;
+  animation: fadeSlideUp 0.6s ease both;
+}
+.hero-title {
+  font-family:'Syne', sans-serif;
+  font-size:clamp(48px, 10vw, 110px);
+  font-weight:800; line-height:0.95;
+  text-align:center; margin-bottom:30px;
+  animation: fadeSlideUp 0.7s 0.1s ease both;
+}
+.hero-title .line2 {
+  background: linear-gradient(135deg, var(--accent1) 0%, var(--accent5) 50%, var(--accent2) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  display:block;
+}
+.hero-subtitle {
+  font-size:18px; color:var(--fg2); max-width:500px;
+  text-align:center; line-height:1.6; margin-bottom:50px;
+  animation: fadeSlideUp 0.7s 0.2s ease both;
+}
+.hero-cta {
+  display:flex; gap:16px; flex-wrap:wrap; justify-content:center;
+  animation: fadeSlideUp 0.7s 0.3s ease both;
+}
+.btn {
+  padding:16px 36px; border-radius:50px;
+  font-family:'Space Grotesk', sans-serif;
+  font-size:16px; font-weight:700;
+  cursor:pointer; border:none; transition:all 0.2s;
+  position:relative; overflow:hidden;
+}
+.btn::after {
+  content:''; position:absolute; inset:0;
+  background:rgba(255,255,255,0.2);
+  transform:translateX(-100%); transition:0.3s;
+}
+.btn:hover::after { transform:translateX(0); }
+.btn:hover { transform:translateY(-3px); box-shadow:0 12px 30px var(--shadow); }
+.btn:active { transform:scale(0.97) translateY(-1px); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent1), var(--accent5));
+  color:#fff;
+}
+.btn-secondary {
+  background:transparent;
+  border:2px solid var(--fg);
+  color:var(--fg);
+}
+
+.hero-cards {
+  display:flex; gap:20px; flex-wrap:wrap;
+  justify-content:center; margin-top:60px;
+  animation: fadeSlideUp 0.7s 0.4s ease both;
+}
+.hero-stat-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px; padding:24px 30px;
+  text-align:center;
+  box-shadow: var(--card-shadow);
+  transform: rotate(var(--rot, 0deg));
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.hero-stat-card:hover {
+  transform: rotate(0deg) translateY(-8px) scale(1.03);
+  box-shadow: 10px 10px 0px rgba(0,0,0,0.9);
+  z-index:2; position:relative;
+}
+.stat-num { font-family:'Bebas Neue',sans-serif; font-size:52px; line-height:1; }
+.stat-label { font-size:12px; color:var(--fg2); margin-top:4px; letter-spacing:1px; }
+
+@keyframes fadeSlideUp {
+  from { opacity:0; transform:translateY(30px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+/* SCROLLING TICKER */
+.ticker-wrap {
+  overflow:hidden; white-space:nowrap;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  padding:12px 0; position:relative; z-index:2;
+}
+.ticker {
+  display:inline-block;
+  animation: ticker 30s linear infinite;
+}
+.ticker span { padding:0 40px; font-size:14px; font-weight:700; color:#fff; }
+@keyframes ticker { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+/* SECTIONS */
+section { position:relative; z-index:1; padding:80px 20px; }
+.section-tag {
+  display:inline-block;
+  background:var(--accent2); color:#fff;
+  border-radius:50px; padding:4px 16px;
+  font-size:11px; letter-spacing:3px; text-transform:uppercase; font-weight:700;
+  margin-bottom:20px;
+}
+.section-title {
+  font-family:'Syne', sans-serif;
+  font-size:clamp(32px, 5vw, 60px);
+  font-weight:800; margin-bottom:40px;
+}
+
+/* QUOTE OF THE DAY */
+#qotd {
+  min-height:60vh; display:flex; align-items:center;
+  background: linear-gradient(135deg, #0d0d12 0%, #1a0a2e 50%, #0d1a12 100%);
+  overflow:hidden; position:relative;
+}
+#qotd::before {
+  content:''; position:absolute; inset:0;
+  background: radial-gradient(ellipse at 30% 50%, rgba(124,58,237,0.3) 0%, transparent 60%),
+              radial-gradient(ellipse at 70% 50%, rgba(16,185,129,0.2) 0%, transparent 60%);
+}
+.qotd-inner {
+  max-width:900px; margin:0 auto; text-align:center;
+  position:relative; z-index:1; padding:0 20px;
+}
+.qotd-tag { color:var(--neon); font-size:12px; letter-spacing:4px; font-weight:700; margin-bottom:24px; }
+.qotd-text {
+  font-family:'Syne', sans-serif;
+  font-size:clamp(24px, 4vw, 48px);
+  font-weight:700; color:#fff; line-height:1.2; margin-bottom:24px;
+  text-shadow: 0 0 40px rgba(0,255,170,0.3);
+}
+.qotd-text .highlight {
+  background: linear-gradient(135deg, var(--neon), #7c3aed);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.qotd-author { color:rgba(255,255,255,0.5); font-size:14px; letter-spacing:2px; }
+.qotd-nav { display:flex; gap:12px; justify-content:center; margin-top:32px; }
+.qotd-dot {
+  width:8px; height:8px; border-radius:50%;
+  background:rgba(255,255,255,0.3); cursor:pointer;
+  transition: all 0.3s; border:none;
+}
+.qotd-dot.active { background:var(--neon); width:24px; border-radius:4px; }
+
+/* KNOWLEDGE MAP */
+#knowledge {
+  background: var(--bg2);
+}
+.knowledge-grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap:24px; max-width:1100px; margin:0 auto;
+}
+.knowledge-card {
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:20px; padding:32px;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor:pointer; position:relative; overflow:hidden;
+}
+.knowledge-card::before {
+  content:'';
+  position:absolute; top:-50px; right:-50px;
+  width:150px; height:150px; border-radius:50%;
+  background: var(--kc, var(--accent1));
+  opacity:0.08; transition:all 0.5s;
+}
+.knowledge-card:hover::before { transform:scale(2.5); opacity:0.12; }
+.knowledge-card:hover { transform: translateY(-8px) rotate(-0.5deg); box-shadow:10px 10px 0px rgba(0,0,0,0.9); }
+.kc-emoji { font-size:36px; margin-bottom:16px; display:block; }
+.kc-title { font-family:'Syne',sans-serif; font-size:20px; font-weight:800; margin-bottom:8px; }
+.kc-stat {
+  display:inline-block; background:var(--kc, var(--accent1));
+  color:#fff; border-radius:50px; padding:4px 14px;
+  font-size:12px; font-weight:700; margin-bottom:12px;
+}
+.kc-desc { font-size:14px; color:var(--fg2); line-height:1.6; }
+.kc-expand { margin-top:16px; font-size:13px; color:var(--accent2); font-weight:600; cursor:pointer; }
+
+/* RAPID FIRE DECK */
+#rapidfire { background:var(--bg); }
+.game-container {
+  max-width:700px; margin:0 auto; position:relative;
+}
+.deck-header {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-bottom:32px;
+}
+.deck-mode-tabs {
+  display:flex; gap:8px; background:var(--bg2);
+  border-radius:50px; padding:4px;
+}
+.tab-btn {
+  padding:8px 20px; border-radius:50px;
+  border:none; cursor:pointer;
+  font-family:'Space Grotesk',sans-serif;
+  font-size:13px; font-weight:600;
+  background:transparent; color:var(--fg2);
+  transition:all 0.3s;
+}
+.tab-btn.active {
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  color:#fff;
+}
+.progress-bar-wrap {
+  height:6px; background:var(--bg2); border-radius:3px; margin-bottom:32px; overflow:hidden;
+}
+.progress-bar { height:100%; border-radius:3px; transition:width 0.5s ease;
+  background: linear-gradient(90deg, var(--accent1), var(--accent2), var(--accent5));
+  background-size:200%;
+  animation: progressShimmer 2s linear infinite;
+}
+@keyframes progressShimmer { from{background-position:0%} to{background-position:200%} }
+
+/* QUESTION CARD */
+.q-card {
+  background:var(--card);
+  border:2px solid var(--border);
+  border-radius:24px; padding:40px;
+  box-shadow: var(--card-shadow);
+  position:relative; overflow:hidden;
+  min-height:300px;
+  transform-origin: center bottom;
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.q-card.shake {
+  animation: shake 0.4s ease;
+}
+.q-card.correct-flash { border-color: var(--correct); box-shadow: 0 0 30px rgba(16,185,129,0.3); }
+.q-card.wrong-flash { border-color: var(--wrong); box-shadow: 0 0 30px rgba(239,68,68,0.3); }
+@keyframes shake {
+  0%,100%{transform:translateX(0)} 25%{transform:translateX(-10px)} 75%{transform:translateX(10px)}
+}
+.q-card-deco {
+  position:absolute; top:-20px; right:-20px;
+  font-size:80px; opacity:0.06; transform:rotate(15deg);
+  font-family:'Bebas Neue',sans-serif; letter-spacing:-2px;
+  pointer-events:none;
+}
+.q-type-badge {
+  display:inline-block; border-radius:50px; padding:4px 14px;
+  font-size:11px; font-weight:700; letter-spacing:2px;
+  text-transform:uppercase; margin-bottom:20px;
+}
+.q-number { font-size:12px; color:var(--fg2); margin-bottom:12px; }
+.q-text {
+  font-family:'Syne', sans-serif;
+  font-size:clamp(18px, 3vw, 26px); font-weight:700;
+  line-height:1.3; margin-bottom:32px;
+}
+.q-options { display:flex; flex-direction:column; gap:12px; }
+.q-option {
+  padding:16px 24px; border-radius:14px;
+  border:2px solid var(--border);
+  background:var(--bg); cursor:pointer;
+  font-size:15px; font-weight:500;
+  transition:all 0.2s; text-align:left;
+  position:relative; overflow:hidden;
+}
+.q-option::before {
+  content:''; position:absolute; inset:0;
+  background: linear-gradient(135deg, var(--accent1), var(--accent2));
+  opacity:0; transition:opacity 0.3s;
+}
+.q-option span { position:relative; z-index:1; }
+.q-option:hover:not(:disabled) {
+  border-color:var(--accent1);
+  transform: translateX(6px);
+  box-shadow: -4px 0 0 var(--accent1);
+}
+.q-option:hover:not(:disabled)::before { opacity:0.06; }
+.q-option.correct { background:rgba(16,185,129,0.15); border-color:var(--correct); color:var(--correct); }
+.q-option.wrong { background:rgba(239,68,68,0.1); border-color:var(--wrong); color:var(--wrong); }
+.q-option:disabled { cursor:default; transform:none; }
+
+/* TRUE/FALSE */
+.tf-options { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.tf-option {
+  padding:30px 20px; border-radius:20px;
+  border:2px solid var(--border);
+  background:var(--bg); cursor:pointer;
+  font-family:'Bebas Neue',sans-serif;
+  font-size:40px; text-align:center;
+  transition:all 0.3s;
+}
+.tf-option:hover:not(:disabled) { transform:scale(1.05); }
+.tf-option.tf-true:hover:not(:disabled) { background:rgba(16,185,129,0.1); border-color:var(--correct); }
+.tf-option.tf-false:hover:not(:disabled) { background:rgba(239,68,68,0.1); border-color:var(--wrong); }
+.tf-option.correct { background:rgba(16,185,129,0.2); border-color:var(--correct); }
+.tf-option.wrong { background:rgba(239,68,68,0.1); border-color:var(--wrong); }
+
+/* SLIDER Q */
+.slider-q { padding:10px 0 20px; }
+.slider-q input[type=range] {
+  -webkit-appearance:none; width:100%; height:8px;
+  border-radius:4px; outline:none; cursor:pointer;
+  background: linear-gradient(90deg, var(--accent1) var(--val,50%), var(--bg2) var(--val,50%));
+}
+.slider-q input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance:none; width:28px; height:28px;
+  border-radius:50%; background:var(--accent1);
+  box-shadow:0 4px 12px rgba(255,107,53,0.5);
+  cursor:pointer; transition:transform 0.2s;
+}
+.slider-q input[type=range]::-webkit-slider-thumb:hover { transform:scale(1.2); }
+.slider-display {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:48px; text-align:center; margin:12px 0;
+  color:var(--accent1);
+}
+.slider-submit {
+  width:100%; padding:14px; border-radius:50px;
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  border:none; color:#fff; font-size:16px; font-weight:700;
+  cursor:pointer; transition:transform 0.2s;
+}
+.slider-submit:hover { transform:scale(1.02); }
+
+/* FEEDBACK */
+.feedback-overlay {
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  border-radius:24px; z-index:10;
+  animation: feedbackIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+  backdrop-filter:blur(4px);
+}
+.feedback-overlay.correct-fb { background:rgba(16,185,129,0.9); }
+.feedback-overlay.wrong-fb { background:rgba(239,68,68,0.85); }
+@keyframes feedbackIn {
+  from{opacity:0; transform:scale(0.5)} to{opacity:1; transform:scale(1)}
+}
+.feedback-emoji { font-size:72px; margin-bottom:12px; }
+.feedback-msg { color:#fff; font-family:'Syne',sans-serif; font-size:28px; font-weight:800; text-align:center; }
+.feedback-fact { color:rgba(255,255,255,0.85); font-size:13px; margin-top:12px; max-width:360px; text-align:center; line-height:1.5; }
+.feedback-pts { color:rgba(255,255,255,0.9); font-family:'Bebas Neue',sans-serif; font-size:36px; margin-top:8px; }
+
+/* CONTROLS */
+.q-controls {
+  display:flex; justify-content:space-between; align-items:center;
+  margin-top:24px;
+}
+.q-skip { background:transparent; border:1px solid var(--border); border-radius:50px; padding:10px 20px; color:var(--fg2); font-size:13px; cursor:pointer; font-family:'Space Grotesk',sans-serif; transition:all 0.2s; }
+.q-skip:hover { border-color:var(--fg2); color:var(--fg); }
+.q-streak { display:flex; align-items:center; gap:6px; font-size:13px; color:var(--accent4); font-weight:700; }
+.q-next {
+  background:linear-gradient(135deg,var(--accent1),var(--accent2));
+  border:none; color:#fff; border-radius:50px;
+  padding:12px 28px; font-size:15px; font-weight:700;
+  cursor:pointer; display:none; transition:transform 0.2s;
+  font-family:'Space Grotesk',sans-serif;
+}
+.q-next:hover { transform:scale(1.05); }
+.q-next.visible { display:block; animation:bounceIn 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes bounceIn { from{transform:scale(0)} to{transform:scale(1)} }
+
+/* SCOREBOARD */
+#scoreboard {
+  background: linear-gradient(135deg, #0d0d12 0%, #1a0a2e 100%);
+  padding:80px 20px;
+}
+.sb-inner { max-width:600px; margin:0 auto; text-align:center; }
+.sb-title {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:72px; letter-spacing:4px;
+  background: linear-gradient(135deg, var(--neon), var(--accent2));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  margin-bottom:8px;
+}
+.sb-score-big {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:120px; line-height:1; color:#fff;
+  text-shadow: 0 0 60px rgba(0,255,170,0.5);
+}
+.sb-label { color:rgba(255,255,255,0.5); font-size:14px; letter-spacing:3px; margin-bottom:40px; }
+.sb-stats {
+  display:grid; grid-template-columns: repeat(3,1fr); gap:16px; margin:40px 0;
+}
+.sb-stat {
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:16px; padding:20px;
+}
+.sb-stat-num { font-family:'Bebas Neue',sans-serif; font-size:40px; color:var(--neon); }
+.sb-stat-label { color:rgba(255,255,255,0.5); font-size:12px; margin-top:4px; }
+.sb-achievements { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin:24px 0; }
+.achievement {
+  background:rgba(255,255,255,0.08);
+  border:1px solid rgba(255,255,255,0.15);
+  border-radius:50px; padding:8px 16px;
+  font-size:12px; color:rgba(255,255,255,0.8);
+  animation: popIn 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+@keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+
+/* LEVERAGE LADDER */
+#ladder { background:var(--bg2); }
+.ladder-wrap { max-width:700px; margin:0 auto; }
+.ladder-level {
+  display:flex; align-items:center; gap:20px;
+  padding:20px 28px; border-radius:16px;
+  background:var(--card); border:1px solid var(--border);
+  margin-bottom:16px; cursor:pointer;
+  transition:all 0.3s; box-shadow:var(--card-shadow);
+  position:relative; overflow:hidden;
+}
+.ladder-level::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:4px;
+  background: var(--lc, var(--accent1));
+}
+.ladder-level:hover { transform: translateX(8px); }
+.ladder-num {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:36px; color:var(--lc, var(--accent1));
+  min-width:36px;
+}
+.ladder-content { flex:1; }
+.ladder-title { font-weight:700; font-size:18px; margin-bottom:4px; }
+.ladder-desc { font-size:13px; color:var(--fg2); }
+.ladder-examples { display:none; }
+.ladder-level.expanded .ladder-examples {
+  display:block; margin-top:12px; font-size:13px;
+  color:var(--fg2); line-height:1.6;
+}
+
+/* FORMULA */
+#formula {
+  background: var(--bg);
+  text-align:center;
+  padding:100px 20px;
+}
+.formula-wrap { max-width:900px; margin:0 auto; }
+.formula-text {
+  font-family:'Bebas Neue',sans-serif;
+  font-size:clamp(20px, 4vw, 42px);
+  letter-spacing:3px; line-height:1.4;
+  color:var(--fg2);
+}
+.formula-var {
+  display:inline-block;
+  color:var(--fg);
+  position:relative;
+  cursor:pointer;
+  transition:transform 0.2s;
+}
+.formula-var::after {
+  content:attr(data-tip);
+  position:absolute; bottom:110%; left:50%; transform:translateX(-50%);
+  background:var(--fg); color:var(--bg);
+  border-radius:8px; padding:6px 12px;
+  font-size:12px; font-family:'Space Grotesk',sans-serif;
+  letter-spacing:0; white-space:nowrap;
+  opacity:0; pointer-events:none; transition:opacity 0.2s;
+  font-weight:400;
+}
+.formula-var:hover::after { opacity:1; }
+.formula-var:hover { transform:scale(1.1); color:var(--accent1); }
+.formula-eq { color:var(--accent1); margin:0 12px; }
+.formula-x { color:var(--accent2); margin:0 8px; }
+
+/* MALAYSIA SECTION */
+#malaysia { background:var(--bg2); }
+.my-grid { display:grid; grid-template-columns: repeat(auto-fit,minmax(250px,1fr)); gap:20px; max-width:900px; margin:0 auto; }
+.my-stat {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:20px; padding:28px;
+  box-shadow:var(--card-shadow); transition:all 0.3s;
+}
+.my-stat:hover { transform:translateY(-6px); }
+.my-flag { font-size:32px; margin-bottom:12px; }
+.my-num { font-family:'Bebas Neue',sans-serif; font-size:44px; color:var(--accent1); }
+.my-label { font-size:13px; color:var(--fg2); margin-top:4px; line-height:1.5; }
+
+/* CONFETTI */
+.confetti-piece {
+  position:fixed; width:10px; height:10px;
+  pointer-events:none; z-index:9998;
+  animation: confettiFall 1.5s ease-in forwards;
+}
+@keyframes confettiFall {
+  0% { transform:translateY(-10px) rotate(0deg); opacity:1; }
+  100% { transform:translateY(100vh) rotate(720deg); opacity:0; }
+}
+
+/* SOUNDS INDICATOR */
+#soundToggle {
+  position:fixed; bottom:20px; right:20px; z-index:1000;
+  background:var(--card); border:1px solid var(--border);
+  border-radius:50px; padding:10px 18px;
+  cursor:pointer; font-size:20px; font-weight:700;
+  box-shadow: 0 4px 20px var(--shadow);
+  transition:all 0.3s;
+}
+#soundToggle:hover { transform:scale(1.1); }
+
+/* TIMER */
+.timer-ring {
+  position:absolute; top:20px; right:20px;
+  width:48px; height:48px;
+}
+.timer-ring svg { transform:rotate(-90deg); }
+.timer-num {
+  position:absolute; inset:0; display:flex;
+  align-items:center; justify-content:center;
+  font-family:'Bebas Neue',sans-serif; font-size:18px;
+}
+
+/* STREAK FIRE */
+.streak-fire {
+  display:inline-block;
+  animation: burnBright 0.5s ease infinite alternate;
+}
+@keyframes burnBright { from{transform:scale(1)} to{transform:scale(1.2)} }
+
+/* RESPONSIVE */
+@media(max-width:600px) {
+  nav { padding:10px 16px; }
+  .hero-title { font-size:48px; }
+  .q-card { padding:24px; }
+  .tf-option { font-size:32px; padding:20px 12px; }
+  .sb-stats { grid-template-columns:1fr; }
+  .formula-text { font-size:18px; }
+}
+
+/* PARALLAX LAYERS */
+.parallax-layer {
+  position:absolute; pointer-events:none;
+  will-change:transform;
+}
+
+/* QOTD ANIMATION */
+.qotd-inner.changing { animation: qotdSwitch 0.6s ease; }
+@keyframes qotdSwitch {
+  0% { opacity:1; transform:translateY(0); }
+  50% { opacity:0; transform:translateY(-20px); }
+  100% { opacity:1; transform:translateY(0); }
+}
+
+/* Day streak bar */
+.day-badge {
+  display:inline-flex; align-items:center; gap:8px;
+  background: linear-gradient(135deg, var(--accent4), var(--accent1));
+  color:#fff; border-radius:50px; padding:6px 16px;
+  font-size:13px; font-weight:700; margin-bottom:16px;
+}
+</style>
+</head>
+<body>
+
+<div id="cursor"></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">GRIND ↯ SMART</div>
+  <div class="nav-score">
+    <div class="score-pill">🔥 Streak <span class="num" id="streakNav">0</span></div>
+    <div class="score-pill">⚡ XP <span class="num" id="xpNav">0</span></div>
+    <button id="darkToggle" onclick="toggleDark()">🌙</button>
+  </div>
+</nav>
+
+<button id="soundToggle" onclick="toggleSound()" title="Toggle sounds">🔊</button>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-eyebrow">🧠 The Research-Backed Truth</div>
+  <h1 class="hero-title">
+    WORK HARD<br>
+    <span class="line2">OR WORK SMART?</span>
+  </h1>
+  <p class="hero-subtitle">An interactive journey through the science of earning more — backed by Stanford, NBER, WHO & real data.</p>
+  <div class="hero-cta">
+    <button class="btn btn-primary" onclick="scrollTo(0, document.getElementById('rapidfire').offsetTop - 60)">⚡ Start Quiz</button>
+    <button class="btn btn-secondary" onclick="scrollTo(0, document.getElementById('knowledge').offsetTop - 60)">📚 Explore Research</button>
+  </div>
+  <div class="hero-cards">
+    <div class="hero-stat-card" style="--rot:-3deg">
+      <div class="stat-num" style="color:var(--accent1)">50hrs</div>
+      <div class="stat-label">PRODUCTIVITY CLIFF<br>Stanford Research</div>
+    </div>
+    <div class="hero-stat-card" style="--rot:2deg">
+      <div class="stat-num" style="color:var(--accent2)">$322B</div>
+      <div class="stat-label">ANNUAL BURNOUT COST<br>2025 Data</div>
+    </div>
+    <div class="hero-stat-card" style="--rot:-1deg">
+      <div class="stat-num" style="color:var(--accent3)">+40%</div>
+      <div class="stat-label">4-DAY WEEK BOOST<br>Microsoft Japan</div>
+    </div>
+    <div class="hero-stat-card" style="--rot:3deg">
+      <div class="stat-num" style="color:var(--accent4)">80/20</div>
+      <div class="stat-label">PARETO'S RULE<br>(but complex)</div>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap">
+  <div class="ticker">
+    <span>⚡ Knowledge workers peak at 25-35 hrs/wk</span>
+    <span>🔥 82% of employees risk burnout in 2025</span>
+    <span>💡 4-day week = equal or better output</span>
+    <span>🧠 Deep work takes 23 mins to regain after interruption</span>
+    <span>📈 NBER: lifetime hours DO matter for earnings inequality</span>
+    <span>🌍 745,000 deaths/yr linked to 55+ hr workweeks — WHO/ILO</span>
+    <span>💰 Working smart = leverage: code, capital, people, content</span>
+    <span>⚡ Knowledge workers peak at 25-35 hrs/wk</span>
+    <span>🔥 82% of employees risk burnout in 2025</span>
+    <span>💡 4-day week = equal or better output</span>
+    <span>🧠 Deep work takes 23 mins to regain after interruption</span>
+    <span>📈 NBER: lifetime hours DO matter for earnings inequality</span>
+    <span>🌍 745,000 deaths/yr linked to 55+ hr workweeks — WHO/ILO</span>
+    <span>💰 Working smart = leverage: code, capital, people, content</span>
+  </div>
+</div>
+
+<!-- QUOTE OF THE DAY -->
+<section id="qotd">
+  <div class="qotd-inner" id="qotdInner">
+    <div class="qotd-tag">✦ QUOTE OF THE DAY ✦</div>
+    <div class="qotd-text" id="qotdText"></div>
+    <div class="qotd-author" id="qotdAuthor"></div>
+  </div>
+  <div class="qotd-nav" id="qotdDots"></div>
+</section>
+
+<!-- KNOWLEDGE CARDS -->
+<section id="knowledge">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-tag">Research Synthesis</div>
+    <h2 class="section-title">5 Evidence-Based Truths</h2>
+    <div class="knowledge-grid" id="knowledgeGrid"></div>
+  </div>
+</section>
+
+<!-- RAPID FIRE QUIZ -->
+<section id="rapidfire">
+  <div class="section-tag" style="background:var(--accent1)">Gamified Learning</div>
+  <h2 class="section-title" style="text-align:center">🔥 Question Decks</h2>
+  <div class="game-container">
+    <div class="deck-header">
+      <div class="deck-mode-tabs">
+        <button class="tab-btn active" onclick="setMode('rapid')" id="tabRapid">⚡ Rapid Fire</button>
+        <button class="tab-btn" onclick="setMode('daily')" id="tabDaily">📅 Daily Deck</button>
+        <button class="tab-btn" onclick="setMode('deep')" id="tabDeep">🧠 Deep Dive</button>
+      </div>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progressBar" style="width:0%"></div>
+    </div>
+
+    <div style="position:relative">
+      <div class="q-card" id="qCard">
+        <!-- Timer ring -->
+        <div class="timer-ring" id="timerRing" style="display:none">
+          <svg width="48" height="48" viewBox="0 0 48 48">
+            <circle cx="24" cy="24" r="20" fill="none" stroke="var(--border)" stroke-width="3"/>
+            <circle cx="24" cy="24" r="20" fill="none" stroke="var(--accent1)" stroke-width="3"
+              stroke-dasharray="125.6" stroke-dashoffset="0" id="timerCircle" stroke-linecap="round"/>
+          </svg>
+          <div class="timer-num" id="timerNum">15</div>
+        </div>
+
+        <div class="q-card-deco" id="qDeco">?</div>
+        <div class="q-type-badge" id="qTypeBadge"></div>
+        <div class="q-number" id="qNum"></div>
+        <div class="q-text" id="qText"></div>
+        <div id="qOptions"></div>
+      </div>
+    </div>
+
+    <div class="q-controls">
+      <div class="q-streak" id="streakDisplay">
+        <span class="streak-fire">🔥</span> <span id="streakCount">0</span> streak
+      </div>
+      <button class="q-skip" onclick="skipQuestion()">Skip →</button>
+      <button class="q-next" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+    </div>
+  </div>
+</section>
+
+<!-- MONEY LADDER -->
+<section id="ladder">
+  <div style="max-width:700px;margin:0 auto;">
+    <div class="section-tag" style="background:var(--accent3)">The Money Ladder</div>
+    <h2 class="section-title">How Earnings Actually Level Up</h2>
+    <div class="ladder-wrap" id="ladderWrap"></div>
+  </div>
+</section>
+
+<!-- FORMULA -->
+<section id="formula">
+  <div class="formula-wrap">
+    <div class="section-tag" style="background:var(--accent4);color:#1a1208">The Real Equation</div>
+    <h2 class="section-title" style="text-align:center">Earning Power Formula</h2>
+    <div class="formula-text" id="formulaText"></div>
+    <p style="margin-top:32px;color:var(--fg2);font-size:14px">Hover each variable to learn more ↑</p>
+  </div>
+</section>
+
+<!-- MALAYSIA STATS -->
+<section id="malaysia">
+  <div style="max-width:900px;margin:0 auto;">
+    <div class="section-tag" style="background:var(--accent5)">🇲🇾 Malaysian Context</div>
+    <h2 class="section-title">Real Numbers, Local Market</h2>
+    <div class="my-grid" id="myGrid"></div>
+  </div>
+</section>
+
+<!-- SCOREBOARD -->
+<section id="scoreboard">
+  <div class="sb-inner">
+    <div class="sb-title">YOUR SCORE</div>
+    <div class="sb-score-big" id="finalScore">0</div>
+    <div class="sb-label">TOTAL XP EARNED</div>
+    <div class="sb-stats">
+      <div class="sb-stat">
+        <div class="sb-stat-num" id="sbCorrect">0</div>
+        <div class="sb-stat-label">Correct</div>
+      </div>
+      <div class="sb-stat">
+        <div class="sb-stat-num" id="sbStreak">0</div>
+        <div class="sb-stat-label">Best Streak</div>
+      </div>
+      <div class="sb-stat">
+        <div class="sb-stat-num" id="sbAccuracy">0%</div>
+        <div class="sb-stat-label">Accuracy</div>
+      </div>
+    </div>
+    <div class="sb-achievements" id="achievements"></div>
+    <button class="btn btn-primary" style="margin-top:24px" onclick="resetGame()">🔄 Play Again</button>
+  </div>
+</section>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+const state = {
+  xp: 0, streak: 0, bestStreak: 0,
+  correct: 0, total: 0, answered: 0,
+  mode: 'rapid', soundOn: true,
+  timerInterval: null, timeLeft: 15,
+  achievements: new Set()
+};
+
+// ============================================================
+// AUDIO ENGINE
+// ============================================================
+let audioCtx;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function playTone(type) {
+  if (!state.soundOn) return;
+  try {
+    const ctx = getAudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    const t = ctx.currentTime;
+    if (type === 'correct') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(523, t);
+      osc.frequency.exponentialRampToValueAtTime(784, t+0.1);
+      osc.frequency.exponentialRampToValueAtTime(1046, t+0.2);
+      gain.gain.setValueAtTime(0.3, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t+0.4);
+      osc.start(t); osc.stop(t+0.4);
+    } else if (type === 'wrong') {
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(200, t);
+      osc.frequency.exponentialRampToValueAtTime(100, t+0.2);
+      gain.gain.setValueAtTime(0.2, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t+0.3);
+      osc.start(t); osc.stop(t+0.3);
+    } else if (type === 'click') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, t);
+      gain.gain.setValueAtTime(0.1, t);
+      gain.gain.exponentialRampToValueAtTime(0.01, t+0.05);
+      osc.start(t); osc.stop(t+0.05);
+    } else if (type === 'levelup') {
+      [523,659,784,1046].forEach((f,i)=>{
+        const o2 = ctx.createOscillator();
+        const g2 = ctx.createGain();
+        o2.connect(g2); g2.connect(ctx.destination);
+        o2.type='sine'; o2.frequency.value=f;
+        g2.gain.setValueAtTime(0.25, t+i*0.1);
+        g2.gain.exponentialRampToValueAtTime(0.01, t+i*0.1+0.2);
+        o2.start(t+i*0.1); o2.stop(t+i*0.1+0.3);
+      });
+    } else if (type === 'tick') {
+      osc.type = 'square';
+      osc.frequency.setValueAtTime(1200, t);
+      gain.gain.setValueAtTime(0.05, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t+0.05);
+      osc.start(t); osc.stop(t+0.05);
+    }
+  } catch(e) {}
+}
+
+// ============================================================
+// QUOTES
+// ============================================================
+const quotes = [
+  { text: `"Hard work beats talent when talent <span class='highlight'>doesn't work hard.</span>"`, author: "Tim Notke" },
+  { text: `"Work smarter, not harder — and then <span class='highlight'>work hard</span> at the smart things."`, author: "Adapted Research Synthesis, 2026" },
+  { text: `"Productivity is never an accident. It is always the result of a commitment to <span class='highlight'>excellence</span>, intelligent planning, and focused effort."`, author: "Paul J. Meyer" },
+  { text: `"You don't get paid for the hour. You get paid for <span class='highlight'>the value</span> you bring to the hour."`, author: "Jim Rohn" },
+  { text: `"It's not about working more hours. It's about <span class='highlight'>leverage</span>: the return per unit of effort."`, author: "Research Synthesis, 2026" },
+  { text: `"The difference between the successful and the unsuccessful is <span class='highlight'>what they do with the same 24 hours.</span>"`, author: "NBER Earnings Research, 2024" },
+  { text: `"<span class='highlight'>Burnout is not a badge of honour.</span> It's an $8.8 trillion productivity leak."`, author: "Gallup State of the Global Workplace 2024" },
+  { text: `"Earning power = skill × market demand × leverage × reputation × <span class='highlight'>bargaining power</span> × consistency."`, author: "The Research Formula, 2026" },
+  { text: `"The highest earners don't earn more per hour — they <span class='highlight'>change the structure</span> of how they earn."`, author: "Leverage Theory" },
+  { text: `"Work hard to become genuinely good. Work smart to place that ability where <span class='highlight'>the market rewards it.</span>"`, author: "Core Research Conclusion, May 2026" }
+];
+let qotdIdx = 0;
+function initQotd() {
+  qotdIdx = Math.floor(Math.random() * quotes.length);
+  renderQotd();
+  const dots = document.getElementById('qotdDots');
+  quotes.forEach((_, i) => {
+    const b = document.createElement('button');
+    b.className = 'qotd-dot' + (i===qotdIdx?' active':'');
+    b.onclick = () => { qotdIdx=i; renderQotd(); updateDots(); };
+    dots.appendChild(b);
+  });
+  setInterval(() => {
+    qotdIdx = (qotdIdx+1)%quotes.length;
+    renderQotd(); updateDots();
+  }, 8000);
+}
+function renderQotd() {
+  const inner = document.getElementById('qotdInner');
+  inner.classList.add('changing');
+  setTimeout(() => {
+    document.getElementById('qotdText').innerHTML = quotes[qotdIdx].text;
+    document.getElementById('qotdAuthor').textContent = '— ' + quotes[qotdIdx].author;
+    inner.classList.remove('changing');
+  }, 300);
+  updateDots();
+}
+function updateDots() {
+  document.querySelectorAll('.qotd-dot').forEach((d,i) => {
+    d.className = 'qotd-dot' + (i===qotdIdx?' active':'');
+  });
+}
+
+// ============================================================
+// KNOWLEDGE CARDS
+// ============================================================
+const knowledgeCards = [
+  { emoji:'📉', color:'var(--accent1)', stat:'50 hrs/wk cliff',
+    title:'The Productivity Cliff', kc:'#ff6b35',
+    desc:'Stanford research shows output per hour drops sharply after 50 hrs/wk. At 70 hrs, total output barely exceeds 55 hrs. Knowledge workers peak at just 25-35 focused hours.',
+    source:'Stanford / Knowledge Worker Research' },
+  { emoji:'🔥', color:'var(--accent5)', stat:'$322B/year cost',
+    title:'Burnout = Business Crisis', kc:'#ec4899',
+    desc:'82% of employees are at burnout risk in 2025. Burnout costs businesses $322B/yr. Gallup found 62% disengaged employees cost $8.8T globally in lost productivity.',
+    source:'Multiple 2024-2025 Surveys' },
+  { emoji:'📅', color:'var(--accent3)', stat:'+40% output',
+    title:'4-Day Week Evidence', kc:'#10b981',
+    desc:'Microsoft Japan: +40% productivity with a 4-day week. Iceland trial (2015-2019): steady or improved output. Now 86% of Iceland\'s workforce has flexible hours.',
+    source:'Microsoft Japan / Iceland Government Trial' },
+  { emoji:'⚖️', color:'var(--accent4)', stat:'80% from 20%',
+    title:'Pareto 80/20 Rule', kc:'#f59e0b',
+    desc:'~20% of activities drive ~80% of results. But research by Steenkamp shows heavy users account for ~50% of sales, not 80%. The principle holds conceptually, not numerically.',
+    source:'Pareto (1896); Steenkamp critique' },
+  { emoji:'🔗', color:'var(--accent2)', stat:'Decouples time',
+    title:'Leverage Changes Everything', kc:'#7c3aed',
+    desc:'Capital, code, content, and people break the time-for-money trap. Wealthy people don\'t sell hours — they own assets and systems that scale without direct labour.',
+    source:'Leverage Theory / Practitioner Research' }
+];
+function initKnowledge() {
+  const grid = document.getElementById('knowledgeGrid');
+  knowledgeCards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'knowledge-card';
+    el.style.setProperty('--kc', c.kc);
+    el.innerHTML = `
+      <span class="kc-emoji">${c.emoji}</span>
+      <div class="kc-title">${c.title}</div>
+      <div class="kc-stat">${c.stat}</div>
+      <div class="kc-desc">${c.desc}</div>
+      <div class="kc-expand">📎 Source: ${c.source}</div>`;
+    grid.appendChild(el);
+  });
+}
+
+// ============================================================
+// QUESTIONS BANK
+// ============================================================
+const allQuestions = [
+  // MCQ
+  { type:'mcq', deck:['rapid','daily','deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'According to Stanford research, at what weekly hours does productivity per hour start dropping sharply?',
+    options:['40 hours','50 hours','60 hours','70 hours'], correct:1,
+    xp:100, fact:'At 70 hrs/wk, total output barely exceeds output at 55 hrs. The sweet spot for knowledge workers is 25-35 focused hours.' },
+  { type:'mcq', deck:['rapid','deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'What percentage of employees were at risk of burnout in 2025 surveys?',
+    options:['54%','62%','82%','91%'], correct:2,
+    xp:100, fact:'82% of employees are at burnout risk. This costs businesses $322 billion annually in lost productivity.' },
+  { type:'mcq', deck:['rapid','daily'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'By how much did Microsoft Japan\'s productivity increase with a 4-day work week?',
+    options:['About 20%','About 30%','Just under 40%','Over 50%'], correct:2,
+    xp:150, fact:'Microsoft Japan\'s Work-Life Choice Challenge 2019 showed productivity jumped ~40% with a 4-day week.' },
+  { type:'mcq', deck:['rapid','deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'What does "working smart" primarily mean in economic terms?',
+    options:['Working faster','Avoiding effort','Increasing return per unit of effort','Working fewer hours only'], correct:2,
+    xp:100, fact:'Working smart = increasing your return per unit of effort through skill, market, position, network, and capital leverage.' },
+  { type:'mcq', deck:['daily','deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'What is the median monthly salary for Malaysian degree holders (DOSM 2024)?',
+    options:['RM3,390','RM4,521','RM5,724','RM7,000'], correct:2,
+    xp:150, fact:'DOSM Graduates Statistics 2024: degree-holder median = RM5,724. Diploma holders median = RM3,390.' },
+  { type:'mcq', deck:['rapid','deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'How many deaths per year are linked to 55+ hour workweeks per WHO/ILO data?',
+    options:['245,000','488,000','745,000','1.2 million'], correct:2,
+    xp:200, fact:'WHO/ILO: 745,000+ people died from heart disease & stroke linked to long working hours (2016 data). 488M face these hours.' },
+  { type:'mcq', deck:['deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'The St. Louis Fed (2024) identified three mechanisms linking hours to earnings. Which is NOT one of them?',
+    options:['Static relationship','Dynamic skill-building','Social signalling via LinkedIn','Selection effects'], correct:2,
+    xp:200, fact:'The three mechanisms are: static (current year earnings), dynamic (future skill building), and selection (high earners happen to work more).' },
+  { type:'mcq', deck:['rapid','daily'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'According to Cal Newport\'s research, how often is the average knowledge worker interrupted?',
+    options:['Every 10 minutes','Every 5 minutes','Every 3 minutes 5 seconds','Every 90 seconds'], correct:2,
+    xp:150, fact:'Interrupted every 3m 5s, it takes 23 MINUTES to fully regain focus. This makes deep work extremely rare and valuable.' },
+  { type:'mcq', deck:['daily','deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'What percentage of Iceland\'s workforce now has access to flexible/reduced working hours?',
+    options:['52%','68%','79%','86%'], correct:3,
+    xp:150, fact:'After the 2015-2019 government trial showed equal or better output, 86% of Iceland\'s workforce gained flexible hours access.' },
+  { type:'mcq', deck:['deep'], badge:'Multiple Choice', badgeColor:'var(--accent2)',
+    text:'OECD data shows job-to-job mobility contributed approximately how much to wage & productivity growth annually (2000-2019)?',
+    options:['0.3 ppt/yr','0.9 ppt/yr','1.5 ppt/yr','2.2 ppt/yr'], correct:1,
+    xp:200, fact:'OECD 2025 Employment Outlook: voluntary job-to-job mobility contributed ~0.9 percentage points annually to wage & productivity growth.' },
+  // TRUE/FALSE
+  { type:'tf', deck:['rapid','daily'], badge:'True or False', badgeColor:'var(--accent4)',
+    text:'The Pareto 80/20 rule has been proven to hold exactly in all consumer goods markets.',
+    correct:'false',
+    xp:100, fact:'FALSE. Steenkamp\'s research found it doesn\'t hold in consumer packaged goods. Heavy users account for ~50% of sales, not 80%.' },
+  { type:'tf', deck:['rapid','daily'], badge:'True or False', badgeColor:'var(--accent4)',
+    text:'Hard work alone is sufficient to guarantee high income in modern labour markets.',
+    correct:'false',
+    xp:100, fact:'FALSE. Markets pay based on perceived value, scarcity, and bargaining power — not effort. Many hardworking people are in low-leverage traps.' },
+  { type:'tf', deck:['rapid'], badge:'True or False', badgeColor:'var(--accent4)',
+    text:'US top 10% earners work more hours per week than bottom 10% earners.',
+    correct:'true',
+    xp:100, fact:'TRUE. US top 10% work 4.4 hrs/wk more than bottom 10%. But in most other countries, top earners work ~1 hr LESS than bottom earners.' },
+  { type:'tf', deck:['daily'], badge:'True or False', badgeColor:'var(--accent4)',
+    text:'The 40-hour work week standard was originally pushed by workers against employer resistance.',
+    correct:'false',
+    xp:150, fact:'FALSE. Both workers AND employers pushed for it — employers saw productivity gains from shorter hours, creating a win-win in the early 20th century.' },
+  { type:'tf', deck:['rapid','deep'], badge:'True or False', badgeColor:'var(--accent4)',
+    text:'Mark Granovetter\'s research showed that STRONG ties (close friends) are most useful for job opportunities.',
+    correct:'false',
+    xp:150, fact:'FALSE. His "strength of weak ties" research showed loose acquaintances often help more — they connect you to info outside your normal circle.' },
+  { type:'tf', deck:['deep'], badge:'True or False', badgeColor:'var(--accent4)',
+    text:'ActivTrak 2026 data shows that productive work session length has INCREASED over 2023-2025.',
+    correct:'true',
+    xp:150, fact:'TRUE. Productive session length grew 13%, from 24m 25s (2023) to 27m 30s (2025) — supporting the "working smarter" narrative.' },
+  // SLIDER
+  { type:'slider', deck:['rapid','daily','deep'], badge:'Estimate It!', badgeColor:'var(--accent5)',
+    text:'What % of employees globally were disengaged at work per Gallup\'s 2024 poll?',
+    min:20, max:100, correct:62, tolerance:8,
+    xp:150, fact:'62% disengaged — costing $8.8 TRILLION in global productivity loss annually (Gallup 2024).' },
+  { type:'slider', deck:['daily','deep'], badge:'Estimate It!', badgeColor:'var(--accent5)',
+    text:'How many minutes does it take to fully regain focus after an interruption at work?',
+    min:1, max:60, correct:23, tolerance:5,
+    xp:150, fact:'23 minutes to regain focus — with interruptions every 3 minutes 5 seconds, deep work becomes nearly impossible without deliberate protection.' },
+  { type:'slider', deck:['rapid','deep'], badge:'Estimate It!', badgeColor:'var(--accent5)',
+    text:'According to DOSM 2024, what is the mean monthly salary (RM) for Malaysian graduates?',
+    min:2000, max:10000, correct:5330, tolerance:500,
+    xp:200, fact:'DOSM 2024: mean monthly graduate salary = RM5,330. Median = RM4,521. Degree holders median = RM5,724.' },
+  // ORDER
+  { type:'mcq', deck:['deep'], badge:'Scenario', badgeColor:'var(--accent3)',
+    text:'Person A earns RM20k/month but spends RM19.5k/month. Person B earns RM8k/month and invests consistently. Who is financially stronger long-term?',
+    options:['Person A — much higher income','Person B — wealth is built by converting income to assets','Both equal — it\'s only about income','Cannot determine'], correct:1,
+    xp:200, fact:'Person B. Wealth requires converting income into ownership. High income with no savings is financial fragility. The jump to "wealth builder" happens when income buys growing assets.' },
+  { type:'mcq', deck:['daily'], badge:'Scenario', badgeColor:'var(--accent3)',
+    text:'Which skill COMBINATION creates the highest leverage according to the research?',
+    options:['One deep technical skill only','Technical + communication + commercial understanding','Hard work + long hours','Credentials + seniority'], correct:1,
+    xp:150, fact:'The best skill stacks combine: technical competence + communication + commercial understanding + digital fluency + people judgment + execution reliability.' },
+  { type:'mcq', deck:['rapid','daily'], badge:'Myth Buster', badgeColor:'var(--accent1)',
+    text:'Which statement about "working smart" is a TRAP to avoid?',
+    options:['Building scarce skills','Moving closer to revenue in your org','Consuming productivity content instead of producing','Improving your negotiation skills'], correct:2,
+    xp:150, fact:'Consuming content about productivity without actually producing anything is the #1 "smart work" trap. Optimize execution, not the optimization system.' },
+  { type:'mcq', deck:['deep'], badge:'Research Deep Cut', badgeColor:'var(--accent2)',
+    text:'KRI (2024) Malaysia research argues what is the "missing link" between a tight labour market and better wages?',
+    options:['Better GDP growth','More FDI','Worker power / bargaining power','Government wage subsidies'], correct:2,
+    xp:250, fact:'KRI: Worker power is the missing link. Without it, jobs can exist without wages rising — especially when job creation is low-quality and workers lack alternatives.' },
+];
+
+// ============================================================
+// QUESTION ENGINE
+// ============================================================
+let currentDeck = [];
+let qIdx = 0;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i=a.length-1;i>0;i--) {
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+  playTone('click');
+  buildDeck();
+  qIdx = 0;
+  answered = false;
+  loadQuestion();
+}
+
+function buildDeck() {
+  const pool = allQuestions.filter(q => q.deck.includes(state.mode));
+  currentDeck = shuffle(pool);
+}
+
+function loadQuestion() {
+  if (!currentDeck.length) buildDeck();
+  if (qIdx >= currentDeck.length) {
+    showScoreboard(); return;
+  }
+  const q = currentDeck[qIdx];
+  answered = false;
+  clearTimer();
+
+  const card = document.getElementById('qCard');
+  card.className = 'q-card';
+  document.getElementById('nextBtn').className = 'q-next';
+  document.getElementById('qCard').querySelector('.feedback-overlay') && document.getElementById('qCard').querySelector('.feedback-overlay').remove();
+
+  document.getElementById('qDeco').textContent = ['?','★','◆','▲','●'][qIdx % 5];
+  document.getElementById('qTypeBadge').textContent = q.badge;
+  document.getElementById('qTypeBadge').style.cssText = `background:${q.badgeColor};color:#fff`;
+  document.getElementById('qNum').textContent = `Question ${qIdx+1} of ${currentDeck.length} · ${q.xp} XP`;
+  document.getElementById('qText').textContent = q.text;
+
+  const opts = document.getElementById('qOptions');
+  opts.innerHTML = '';
+
+  if (q.type === 'mcq') {
+    opts.className = 'q-options';
+    q.options.forEach((o, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'q-option';
+      btn.innerHTML = `<span>${String.fromCharCode(65+i)}. ${o}</span>`;
+      btn.onclick = () => { if(!answered) handleMCQ(i, q.correct, q); };
+      opts.appendChild(btn);
+    });
+    if (state.mode === 'rapid') startTimer(q);
+  } else if (q.type === 'tf') {
+    opts.className = 'tf-options';
+    ['✅ True', '❌ False'].forEach((label, i) => {
+      const val = i===0 ? 'true' : 'false';
+      const btn = document.createElement('button');
+      btn.className = 'tf-option ' + (i===0?'tf-true':'tf-false');
+      btn.innerHTML = label;
+      btn.onclick = () => { if(!answered) handleTF(val, q.correct, q); };
+      opts.appendChild(btn);
+    });
+    if (state.mode === 'rapid') startTimer(q);
+  } else if (q.type === 'slider') {
+    opts.className = 'slider-q';
+    const pct = ((q.correct - q.min) / (q.max - q.min) * 100).toFixed(0);
+    const mid = Math.round((q.min + q.max) / 2);
+    opts.innerHTML = `
+      <div class="slider-display" id="sliderVal">${mid}</div>
+      <input type="range" min="${q.min}" max="${q.max}" value="${mid}" id="sliderInput"
+        oninput="updateSlider(this, ${q.min}, ${q.max})" step="${q.max>1000?100:1}">
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--fg2);margin:4px 0 16px">
+        <span>${q.min}</span><span>${q.max}</span></div>
+      <button class="slider-submit" onclick="handleSlider(${q.correct},${q.tolerance},currentDeck[${qIdx}])">Lock In Answer</button>`;
+  }
+
+  const pct = ((qIdx) / currentDeck.length * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  state.total++;
+}
+
+function updateSlider(el, mn, mx) {
+  document.getElementById('sliderVal').textContent = el.value;
+  const pct = ((el.value - mn)/(mx-mn)*100).toFixed(0);
+  el.style.setProperty('--val', pct+'%');
+}
+
+function handleMCQ(selected, correct, q) {
+  answered = true;
+  clearTimer();
+  const btns = document.querySelectorAll('.q-option');
+  btns.forEach((b,i) => {
+    b.disabled = true;
+    if (i===correct) b.className = 'q-option correct';
+    else if (i===selected && selected!==correct) b.className = 'q-option wrong';
+  });
+  const isCorrect = selected === correct;
+  showFeedback(isCorrect, q);
+}
+function handleTF(selected, correct, q) {
+  answered = true;
+  clearTimer();
+  const btns = document.querySelectorAll('.tf-option');
+  btns.forEach(b => {
+    b.disabled = true;
+    const val = b.classList.contains('tf-true') ? 'true' : 'false';
+    if (val === correct) b.className = b.className + ' correct';
+    else if (val === selected && selected !== correct) b.className = b.className + ' wrong';
+  });
+  const isCorrect = selected === correct;
+  showFeedback(isCorrect, q);
+}
+function handleSlider(correct, tol, q) {
+  const val = parseInt(document.getElementById('sliderInput').value);
+  const isCorrect = Math.abs(val - correct) <= tol;
+  document.getElementById('sliderInput').disabled = true;
+  document.querySelector('.slider-submit').disabled = true;
+  answered = true;
+  showFeedback(isCorrect, q, `Your answer: ${val} (correct: ${correct})`);
+}
+
+function showFeedback(isCorrect, q, extra) {
+  if (isCorrect) {
+    playTone('correct');
+    state.correct++;
+    state.streak++;
+    if (state.streak > state.bestStreak) state.bestStreak = state.streak;
+    const bonus = state.streak >= 3 ? Math.floor(q.xp * 0.5) : 0;
+    state.xp += q.xp + bonus;
+    updateNavScore();
+    document.getElementById('qCard').classList.add('correct-flash');
+    if (state.streak >= 5) { playTone('levelup'); spawnConfetti(); grantAchievement('🔥 On Fire! 5 streak'); }
+    if (state.correct >= 10) grantAchievement('🧠 Knowledge Master');
+    if (q.xp >= 200) grantAchievement('💎 Deep Diver');
+  } else {
+    playTone('wrong');
+    state.streak = 0;
+    document.getElementById('qCard').classList.add('shake');
+    document.getElementById('qCard').classList.add('wrong-flash');
+    setTimeout(() => document.getElementById('qCard').classList.remove('shake'), 500);
+  }
+  document.getElementById('streakCount').textContent = state.streak;
+  document.getElementById('streakNav').textContent = state.streak;
+
+  const msgs_c = ['🎯 Nailed it!', '🔥 Correct!', '💡 Genius!', '⚡ BOOM!', '🚀 Crushing it!'];
+  const msgs_w = ['😬 Not quite...', '🙃 Close but nope', '💀 Ouch!', '🧊 Cold take', '❌ Try again'];
+  const fb = document.createElement('div');
+  fb.className = 'feedback-overlay ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  fb.innerHTML = `
+    <div class="feedback-emoji">${isCorrect ? ['🎯','⚡','🔥','💡','🚀'][Math.floor(Math.random()*5)] : ['😭','💀','🤦','🧊','❌'][Math.floor(Math.random()*5)]}</div>
+    <div class="feedback-msg">${isCorrect ? msgs_c[Math.floor(Math.random()*msgs_c.length)] : msgs_w[Math.floor(Math.random()*msgs_w.length)]}</div>
+    ${extra ? `<div class="feedback-fact">${extra}</div>` : ''}
+    <div class="feedback-fact">${q.fact}</div>
+    ${isCorrect ? `<div class="feedback-pts">+${q.xp} XP${state.streak>=3?' + STREAK BONUS!':''}</div>` : ''}`;
+  document.getElementById('qCard').appendChild(fb);
+  setTimeout(() => { document.getElementById('nextBtn').className = 'q-next visible'; }, 500);
+}
+
+function nextQuestion() {
+  playTone('click');
+  qIdx++;
+  loadQuestion();
+}
+function skipQuestion() {
+  playTone('click');
+  state.streak = 0;
+  qIdx++;
+  loadQuestion();
+}
+
+// TIMER
+function startTimer(q) {
+  state.timeLeft = 15;
+  const ring = document.getElementById('timerRing');
+  const circle = document.getElementById('timerCircle');
+  const num = document.getElementById('timerNum');
+  ring.style.display = 'block';
+  const circumference = 125.6;
+  state.timerInterval = setInterval(() => {
+    state.timeLeft--;
+    num.textContent = state.timeLeft;
+    const offset = circumference * (1 - state.timeLeft/15);
+    circle.style.strokeDashoffset = offset;
+    if (state.timeLeft <= 5) { circle.style.stroke = 'var(--wrong)'; playTone('tick'); }
+    if (state.timeLeft <= 0) {
+      clearTimer();
+      if (!answered) {
+        answered = true;
+        playTone('wrong');
+        state.streak = 0;
+        const fb = document.createElement('div');
+        fb.className = 'feedback-overlay wrong-fb';
+        fb.innerHTML = `<div class="feedback-emoji">⏰</div><div class="feedback-msg">Time's Up!</div><div class="feedback-fact">${q.fact}</div>`;
+        document.getElementById('qCard').appendChild(fb);
+        setTimeout(() => { document.getElementById('nextBtn').className = 'q-next visible'; }, 300);
+      }
+    }
+  }, 1000);
+}
+function clearTimer() {
+  if (state.timerInterval) clearInterval(state.timerInterval);
+  const ring = document.getElementById('timerRing');
+  if (ring) ring.style.display = 'none';
+  const circle = document.getElementById('timerCircle');
+  if (circle) circle.style.stroke = 'var(--accent1)';
+}
+
+// ============================================================
+// SCOREBOARD
+// ============================================================
+function showScoreboard() {
+  document.getElementById('finalScore').textContent = state.xp.toLocaleString();
+  document.getElementById('sbCorrect').textContent = state.correct;
+  document.getElementById('sbStreak').textContent = state.bestStreak;
+  const acc = state.total > 0 ? Math.round(state.correct/state.total*100) : 0;
+  document.getElementById('sbAccuracy').textContent = acc + '%';
+  const ach = document.getElementById('achievements');
+  ach.innerHTML = '';
+  if (acc >= 80) grantAchievement('🏆 Expert Level');
+  if (acc >= 50) grantAchievement('📈 Getting There');
+  state.achievements.forEach((a,i) => {
+    const el = document.createElement('div');
+    el.className = 'achievement';
+    el.style.animationDelay = i*0.1+'s';
+    el.textContent = a;
+    ach.appendChild(el);
+  });
+  if (state.xp > 500) { playTone('levelup'); spawnConfetti(); spawnConfetti(); }
+  setTimeout(() => {
+    document.getElementById('scoreboard').scrollIntoView({behavior:'smooth'});
+  }, 300);
+}
+function grantAchievement(label) {
+  if (!state.achievements.has(label)) {
+    state.achievements.add(label);
+    const el = document.createElement('div');
+    el.className = 'achievement';
+    el.textContent = label;
+    document.getElementById('achievements').appendChild(el);
+  }
+}
+function resetGame() {
+  state.xp=0; state.streak=0; state.bestStreak=0;
+  state.correct=0; state.total=0; state.achievements.clear();
+  qIdx=0; buildDeck();
+  updateNavScore();
+  document.getElementById('achievements').innerHTML='';
+  document.getElementById('rapidfire').scrollIntoView({behavior:'smooth'});
+  loadQuestion();
+}
+
+// ============================================================
+// MONEY LADDER
+// ============================================================
+const ladderData = [
+  { num:1, color:'#94a3b8', title:'Sell Time', desc:'Hourly or fixed salary. Income rises via promotions, overtime, or job changes.',
+    examples:'Capped by time and employer budget. Swapping hours for money with no leverage.' },
+  { num:2, color:'#10b981', title:'Sell Skill', desc:'You earn more by becoming better than average at something valuable.',
+    examples:'Coding · Accounting · Therapy · Law · Design · Analytics · Engineering · Sales · PM' },
+  { num:3, color:'#f59e0b', title:'Sell Outcomes', desc:'Paid for measurable results, not just effort or presence.',
+    examples:'Closing deals · Reducing costs · Increasing revenue · Managing teams · Delivering projects' },
+  { num:4, color:'#7c3aed', title:'Sell Systems', desc:'You create repeatable processes, products, teams, or software.',
+    examples:'SaaS products · Agencies · Content platforms · Automated workflows · Franchise systems' },
+  { num:5, color:'#ff6b35', title:'Own Assets', desc:'You earn through equity, business ownership, property, IP, or investments.',
+    examples:'Equity · Business ownership · Property · Intellectual property · Profit-sharing · Index funds' },
+];
+function initLadder() {
+  const wrap = document.getElementById('ladderWrap');
+  ladderData.forEach(l => {
+    const el = document.createElement('div');
+    el.className = 'ladder-level';
+    el.style.setProperty('--lc', l.color);
+    el.innerHTML = `
+      <div class="ladder-num">${l.num}</div>
+      <div class="ladder-content">
+        <div class="ladder-title">${l.title}</div>
+        <div class="ladder-desc">${l.desc}</div>
+        <div class="ladder-examples">Examples: ${l.examples}</div>
+      </div>
+      <span style="color:var(--fg2);font-size:20px">▸</span>`;
+    el.onclick = () => {
+      el.classList.toggle('expanded');
+      playTone('click');
+      el.querySelector('span').textContent = el.classList.contains('expanded') ? '▾' : '▸';
+    };
+    wrap.appendChild(el);
+  });
+}
+
+// ============================================================
+// FORMULA
+// ============================================================
+function initFormula() {
+  const vars = [
+    {v:'Skill', tip:'Rare, valuable competence you\'ve built'},
+    {v:'Market Demand', tip:'High-paying sectors & scarce roles'},
+    {v:'Leverage', tip:'Code, capital, people, systems'},
+    {v:'Reputation', tip:'What people say when you\'re not there'},
+    {v:'Bargaining Power', tip:'Your ability to walk away & be missed'},
+    {v:'Consistency', tip:'Long-term reliability compounds trust'},
+  ];
+  const ft = document.getElementById('formulaText');
+  let html = 'Earning Power <span class="formula-eq">=</span>';
+  vars.forEach((v,i) => {
+    html += ` <span class="formula-var" data-tip="${v.tip}">${v.v}</span>`;
+    if (i < vars.length-1) html += `<span class="formula-x">×</span>`;
+  });
+  ft.innerHTML = html;
+}
+
+// ============================================================
+// MALAYSIA STATS
+// ============================================================
+const myStats = [
+  { flag:'🇲🇾', num:'RM5,724', label:'Median monthly salary — degree holders (DOSM 2024)' },
+  { flag:'📊', num:'RM4,521', label:'Median monthly salary — all graduates (DOSM 2024)' },
+  { flag:'🎓', num:'RM3,390', label:'Median monthly salary — diploma holders (DOSM 2024)' },
+  { flag:'⚠️', num:'Skills Gap', label:'HR Minister: tight labour market, stagnant wages, limited high-quality jobs' },
+  { flag:'💡', num:'Smart Move', label:'Build internationally marketable skills + move to higher-productivity sectors' },
+  { flag:'🌏', num:'Regional Play', label:'Singapore/regional markets, remote work, freelancing, export services' },
+];
+function initMalaysia() {
+  const grid = document.getElementById('myGrid');
+  myStats.forEach(s => {
+    const el = document.createElement('div');
+    el.className = 'my-stat';
+    el.innerHTML = `<div class="my-flag">${s.flag}</div><div class="my-num">${s.num}</div><div class="my-label">${s.label}</div>`;
+    grid.appendChild(el);
+  });
+}
+
+// ============================================================
+// PARTICLES
+// ============================================================
+function initParticles() {
+  const colors = ['#ff6b35','#7c3aed','#10b981','#f59e0b','#ec4899'];
+  for (let i=0;i<15;i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = 4 + Math.random()*8;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}vw;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      opacity:${0.3+Math.random()*0.4};
+      animation-duration:${8+Math.random()*15}s;
+      animation-delay:${-Math.random()*20}s;
+    `;
+    document.body.appendChild(p);
+  }
+}
+
+// ============================================================
+// CONFETTI
+// ============================================================
+function spawnConfetti() {
+  const colors = ['#ff6b35','#7c3aed','#10b981','#f59e0b','#ec4899','#00ffaa','#3b82f6'];
+  for(let i=0;i<30;i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    const size = 6+Math.random()*10;
+    c.style.cssText = `
+      left:${Math.random()*100}vw;
+      top:${-20+Math.random()*-100}px;
+      width:${size}px;height:${size}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${Math.random()>0.5?'50%':'2px'};
+      animation-duration:${1+Math.random()*1.5}s;
+      animation-delay:${Math.random()*0.5}s;
+    `;
+    document.body.appendChild(c);
+    setTimeout(() => c.remove(), 2500);
+  }
+}
+
+// ============================================================
+// CURSOR
+// ============================================================
+function initCursor() {
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+  });
+  document.querySelectorAll('button, a, .q-option, .tf-option, .knowledge-card, .ladder-level, .formula-var').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+  });
+}
+
+// ============================================================
+// NAV / DARK MODE / SOUND
+// ============================================================
+function updateNavScore() {
+  document.getElementById('xpNav').textContent = state.xp.toLocaleString();
+  document.getElementById('streakNav').textContent = state.streak;
+}
+function toggleDark() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('darkToggle').textContent = isDark ? '🌙' : '☀️';
+  playTone('click');
+}
+function toggleSound() {
+  state.soundOn = !state.soundOn;
+  document.getElementById('soundToggle').textContent = state.soundOn ? '🔊' : '🔇';
+}
+
+// ============================================================
+// PARALLAX
+// ============================================================
+function initParallax() {
+  window.addEventListener('scroll', () => {
+    const y = window.scrollY;
+    document.querySelectorAll('.hero-stat-card').forEach((c,i) => {
+      const speed = (i%2===0?0.05:-0.05);
+      c.style.transform = `rotate(${c.style.getPropertyValue('--rot') || '0deg'}) translateY(${y*speed}px)`;
+    });
+  });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+window.addEventListener('load', () => {
+  initParticles();
+  initQotd();
+  initKnowledge();
+  initLadder();
+  initFormula();
+  initMalaysia();
+  buildDeck();
+  loadQuestion();
+  initCursor();
+  initParallax();
+  // Animate hero stats
+  const cards = document.querySelectorAll('.hero-stat-card');
+  cards.forEach((c,i) => {
+    c.style.animationDelay = (0.5 + i*0.1)+'s';
+  });
+});
+</script>
+</body>
+</html>
